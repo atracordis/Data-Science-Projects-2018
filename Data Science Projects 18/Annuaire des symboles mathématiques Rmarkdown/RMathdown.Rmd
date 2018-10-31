@@ -1,0 +1,179 @@
+---
+title: "RMathdown"
+author: "Wajd"
+date: "6 septembre 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Environnement
+
+## Motivation
+
+R et son IDE, RStudio, sont gratuits et sont très utilisés dans la Data Science, l'Actuariat et les Statistiques, entre autres. Rmarkdown permet de générer des fichiers Word ou HTML avec des codes, des outputs, des graphes, des formules mathématiques, entre autres choses. 
+
+## Installation
+
+Il faudra d'abord télécharger RStudio sur ce lien. <https://www.rstudio.com/products/rstudio/download/> 
+
+Par la suite, il faudra télécharger la librarie rmarkdown. Il suffit d'ouvrir Rstudio, aller sur Packages => Install => écrire rmarkdown => Confirmer. 
+
+Enfin, vous pourrez créer votre premier document rmarkdown avec File => New => Rmarkdown. (Pensez tout de même à créer un projet d'abord, File => New Project).
+
+Par la suite, vous pourrez tester l'output on cliquant sur "Knit". Knit veut dire tisser en anglais, comme dans la couture. C'est comme s'il tissait votre input de texte, de formules et de codes dans un fichier HTML ou Word. Pour décider quel output vous préférez, il faudra appuyer sur la flèche à côté de Knit. Un menu s'affiche et vous pourrez choisir entre le pdf et le word.
+
+# Annuaire des écritures mathématiques
+
+## Conditions de base
+
+Pour écrire un symbole mathématique sans sauter de ligne, il suffit de l'entourer de \$. Par contre, pour écrire des éléments volumineux comme des démonstrations et des matrices, il vaut mieux entourer le tout avec des \$\$.
+
+
+## Lettres grecques
+
+\\alpha - $\alpha$
+
+\\nu - $\nu$
+
+\\beta - $\beta$
+
+\\xi\\Xi - $\xi\Xi$
+
+\\gamma \\Gamma - $\gamma \Gamma$
+
+\\delta \\Delta - $\delta \Delta$	
+
+\\pi \\Pi - $\pi \Pi$
+
+\\epsilon \\varepsilon - $\epsilon \varepsilon$
+
+\\rho \\varrho - $\rho\varrho$
+
+\\zeta - $\zeta$
+
+\\sigma \\Sigma - $\sigma \Sigma$
+
+\\eta - $\eta$
+
+\\tau - $\tau$
+
+\\theta \\vartheta \\Theta - $\theta \vartheta \Theta$
+ 	
+\\upsilon \\Upsilon - $\upsilon \Upsilon$
+
+\\iota - $\iota$
+
+\\phi \\varphi \\Phi - $\phi \varphi \Phi$
+		
+\\kappa - $\kappa$
+
+\\chi - $\chi$
+
+\\lambda \\Lambda - $\lambda \Lambda$
+		
+\\psi \\Psi - $\psi \Psi$
+
+\\mu - $\mu$	
+
+\\omega \\Omega - $\omega \Omega$
+
+## Symboles usuels
+
+$x = y$ - x = y
+
+$x < y$ - x < y
+
+$x > y$ - x > y
+
+$X_{i,j}$ - X_{i,j}
+
+$a_i \ge 0~\forall i$ a_i \\ge 0~\\forall i
+
+$\sqrt{a}$ - \\sqrt{a}
+
+$x \le y$ - x \\le y
+
+$x \ge y$ - x \\ge y
+
+$x^{n}$ - x^n
+
+$x_{n}$ - x_n
+	
+$\overline{x}$ - \\overline{x}
+
+$\hat{x}$ - \\hat{x}
+
+$\tilde{x}$ - \\tilde{x}
+
+$\frac{a}{b}$ - \\frac{a}{b}
+
+$\displaystyle \frac{a}{b}$ - \\frac{a}{b}
+
+$\binom{n}{k}$ - \\binom{n}{k}
+
+$x_{1} + x_{2} + \cdots + x_{n}$ - x_{1} + x_{2} + \\cdots + x_{n}
+
+$x_{1}, x_{2}, \dots, x_{n}$ - x_{1}, x_{2}, \\dots, x_{n}
+
+$x \in A$ - x \\in A
+
+$|A|$ - |A|
+
+$x \subset B$ - x \\subset B
+
+$x \subseteq B$ - x \\subseteq B
+
+$A \cup B$ - A \\cup B
+
+$A \cap B$ - A \\cap B
+
+$P(A \mid B)$ - P(A \\mid B)
+
+$\{1, 2, 3\}$ - \\{1, 2, 3\\}
+
+$\sin(x)$ - \\sin(x)
+
+$\log(x)$ - \\log(x)
+
+$\int_{a}^{b}$ \\int_a^b
+
+$a_{\omega_k}$ a_{\\omega_k}
+
+$\left(\int_{a}^{b} f(x) \; dx\right)$ - \\left(\\int_a^b f(x) \\; dx \\right)
+
+$\left[\int_{-\infty}^{\infty} f(x) \; dx\right]$ - \\left [\\int_{-\\infty}^{\\infty} f(x) \\; dx \\right]
+
+$\left. F(x) \right|_{a}^{b}$ - \\left. F(x) \\right|_a^b
+
+$\sum_{x = a}^{b} f(x)$ - \\sum_{x = a}^b f(x)
+
+$\prod_{x = a}^{b} f(x)$ - \\prod_{x = a}^b f(x)
+
+$\lim_{x \to \infty} f(x)$ - \\lim_{x \\to \\infty} f(x)
+
+$\displaystyle \lim_{x \to \infty} f(x)$ - \\displaystyle \\lim_{x \\to \\infty} f(x)
+
+## Matrice
+
+
+$$  X =  \left[\begin{array}
+{rrr}
+X_1(\omega_1) & X_1(\omega_2) & ... & X_1(\omega_n) \\
+X_2(\omega_1) & X_2(\omega_2) & ... & X_2(\omega_n) \\
+... & ... & ... & ... \\
+X_p(\omega_1) & X_p(\omega_2) & ... & X_p(\omega_n) 
+\end{array}\right] $$
+
+
+X =  \\left[\\begin{array}
+{rrr}
+X_1(\\omega_1) & X_1(\\omega_2) & ... & X_1(\\omega_n) \\\\
+X_2(\\omega_1) & X_2(\\omega_2) & ... & X_2(\\omega_n) \\\\
+... & ... & ... & ... \\\\
+X_p(\\omega_1) & X_p(\\omega_2) & ... & X_p(\\omega_n) 
+\\end{array}\\right] 

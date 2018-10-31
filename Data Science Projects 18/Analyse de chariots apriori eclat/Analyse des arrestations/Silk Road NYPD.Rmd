@@ -1,0 +1,332 @@
+---
+title: "Silk Road NYPD"
+author: "Wajd"
+date: "19 février 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Silk Road NYPD
+
+
+
+```{r pressure  }
+library(arules)
+library(arulesViz)
+```
+
+On commence par récupérer la table sqf. Elle contient les données concernant les arrestations d'innocents
+
+```{r}
+dat <- read.table("sqf.csv", header=T,fill=T, encoding="utf-8", sep=";", dec=".",quote = "", na.string=" " )
+dim(dat)
+```
+
+Pour faire une étude associative, nous devons commencer par nettoyer nos variables.
+
+```{r}
+#fix date and time
+dat$datestop <- as.Date(sprintf("%08d", dat$datestop), format ="%m%d%Y")
+dat$timestop <- as.integer(substr(sprintf("%04d", dat$timestop), 1, 2))
+#clean continuous variables: age, height and weight
+#age
+dat$perobs[ dat$perobs<1 | dat$perobs>120 ] <- NA
+head(dat$perstop)
+dat$perstop[dat$perstop =="**"] <- NA
+dat$perstop <- as.numeric(dat$perstop)
+dat$dob <- NULL
+```
+
+L'âge, la taille et le poids sont des valeurs continues. Il faudra les nettoyer des valeurs aberrantes qui sont considérées ici comme des erreurs de saisie.
+
+On commence par l'âge
+
+```{r}
+hist(dat$age)
+table(dat$age)
+dat$age[dat$age < 10 | dat$age > 90] <- NA
+hist(dat$age, breaks=40)
+```
+
+On passe ensuite à la taille
+
+```{r}
+#height
+table(dat$height)
+barplot(table(dat$height))
+dat$height[dat$height < 40 | dat$height > 90] <- NA
+hist(dat$height, breaks=40)
+```
+
+Et maintenant, le poids
+
+```{r}
+table(dat$weight)
+barplot(table(dat$weight))
+dat$weight[dat$weight < 50 | dat$weight > 400] <- NA
+hist(dat$weight, breaks=40)
+```
+
+On va transformer les variables nominales en factors
+
+```{r}
+dat$city <- factor(dat$city, labels=c("Manhattan", "Brooklyn", "Bronx",
+                                      "Queens", "Staten Island"))
+dat$race <- factor(dat$race, labels=c("Black", "Black Hispanic",
+                                      "White Hispanic", "White", "Asian/Pacific Islander",
+                                      "Am. Indian/ Native Alaskan"))
+dat$sex <- factor(dat$sex+1L, label=c("female", "male"))
+dat$build <- factor(dat$build, labels=c("heavy", "muscular",
+                                        "medium", "thin"))
+dat$forceuse[dat$forceuse==0] <- NA
+dat$forceuse[is.na(dat$forceuse)] <- 7
+dat$forceuse <- factor(dat$forceuse, labels =c("defense of other",
+                                               "defense of self", "overcome resistence", "other",
+                                               "suspected flight", "suspected weapon", "unknown"))
+dat$inout[dat$inout>1] <- NA
+dat$inout[is.na(dat$inout)] <- 2
+dat$inout <- factor(dat$inout+1L, labels=c("outside", "inside", "unknown"))
+dat$trhsloc <- factor(dat$trhsloc+1L, labels=c("neither",
+                                               "housing authority", "transit authority"))
+```
+
+On a enregistré les crimes et leurs codes correspondants dans un fichier csv pour assigner à chaque code le texte du crime correspondant.
+
+```{r}
+crimecodes <- read.csv("crimecodes.csv",sep="\t", header = FALSE)
+dat$detailcm <- factor(dat$detailcm, levels= crimecodes[,1],
+                       labels=crimecodes[,2])
+```
+
+On va continuer le nettoyage en transformant les autres variables nominales en factor
+
+```{r}
+dat$pct <- as.factor(dat$pct) 
+dat$addrpct <- as.factor(dat$addrpct)
+dat$sector <- as.factor(dat$sector)
+dat$typeofid[dat$typeofid>3] <- 4
+dat$typeofid <- factor(dat$typeofid,
+                       labels=c("photo id", "verbal id", "refused to provide id", "unknown"))
+dat$repcmd <- as.factor(dat$repcmd)
+dat$revcmd <- as.factor(dat$revcmd)
+```
+
+On passe à présent à la transformation des variables binaires en logical
+
+```{r}
+
+binary <- strsplit("frisked searched contrabn pistol riflshot asltweap knifcuti machgun othrweap arstmade sumissue sumoffen",
+                   " ")[[1]]
+for(b in binary) dat[[b]] <- as.logical(dat[[b]])
+#cs reason to stop
+for(b in grep("cs_", colnames(dat), value=TRUE)) dat[[b]] <- as.logical(dat[[b]])
+
+```
+
+
+En sachant que rf est la raison pour la fouille, sb est la raison pour la fouille approfondie, ac est les circonstances supplémentaires de l'arrestation, et pf (les variables qui nous intéressent) décrivent la violence de l'arrestation.
+
+```{r}
+for(b in grep("rf_", colnames(dat), value=TRUE)) dat[[b]] <- as.logical(dat[[b]])
+#sb = basis of search
+for(b in grep("sb_", colnames(dat), value=TRUE)) dat[[b]] <- as.logical(dat[[b]])
+#ac = additional circumstance
+for(b in grep("ac_", colnames(dat), value=TRUE)) dat[[b]] <- as.logical(dat[[b]])
+#pf = force used
+for(b in grep("pf_", colnames(dat), value=TRUE)) dat[[b]] <- as.logical(dat[[b]])
+dat$othpers <- as.logical(dat$othpers)
+dat$explnstp <- as.logical(dat$explnstp)
+```
+
+offunif décrit si l'officier est en uniforme. Si l'officier est en uniforme, il n'a pas besoin de s'identifier au civil lors de l'arrestation.
+
+```{r}
+#If the officer is in uniform then the officer does not need to inform the person that he/she is an officer and show his/her shield.
+dat$offunif <- as.logical(dat$offunif)
+dat$offverb <- as.logical(dat$offverb)
+dat$offverb[dat$offunif] <- NA
+dat$officrid <- as.logical(dat$officrid)
+dat$officrid[dat$offunif] <- NA
+dat$offshld <- as.logical(dat$offshld)
+dat$offshld[dat$offunif] <- NA
+
+dat$radio <- as.logical(dat$radio)
+
+```
+
+On supprime les variables non utilisées
+
+```{r}
+#Remove unused variables
+dat$year <- NULL # we only have 2014
+dat$haircolr <- NULL
+dat$eyecolor <- NULL
+dat$ser_num <- NULL
+dat$othfeatr <- NULL
+dat$arstoffn <- NULL
+dat$crimsusp <- NULL
+dat$premname <- NULL
+dat$addrnum <- NULL
+dat$stname <- NULL
+dat$stinter <- NULL
+dat$ crossst <- NULL
+dat$beat <- NULL
+dat$post <- NULL
+dat$recstat <- NULL
+dat$linecm <- NULL
+```
+
+On enregistre les données de côté pour disposer du dataset nettoyé à l'avenir.
+
+```{r}
+#Check summary of cleaned data
+summary(dat)
+
+save(dat, file="SFQ_clean.rda")
+```
+
+Ce serait intéressant de visualiser les proportions d'arrestations par rapport à la population totale
+
+```{r}
+oldpar <- par("mar" = c(6,4,4,2)+.1)
+barplot(table(dat$city), ylab="Number of Stops", las=3)
+
+par(oldpar)
+#2014 stats
+#manhattan 1637000 persons
+#Brooklyn 2621000 persons
+#bronx 1442000 perons
+#queens 2322000 persons
+#staten island 473301 persons
+
+pop <- c(Manhattan =1637000, Brooklyn = 2621000, Bronx = 1442000,
+         Queens =2322000, 'Staten Island'=473301)
+oldpar <- par("mar" = c(6,4,4,2)+.1)
+barplot(table(dat$city)/pop*100, ylab="Stops in % of Population",
+        las=3, ylim=c(0,2))
+```
+
+```{r}
+tbl <- table(dat$race)
+names(tbl) <- abbreviate(names(tbl), 8)
+barplot(tbl, ylab="Number of Stops", las=3)
+
+```
+
+On compare par ailleurs les proportions d'arrestations par race par rapport aux proportions des races par rapport à la population totale.
+
+```{r}
+#compare to population 
+pop <- c(White=44.6, Black=25.1, Hispanic=27.5, Other=11.8)
+sum(pop)
+#does not add up to 100
+#aggregate data so the groups match the population data
+pop <- pop/sum(pop)
+#race proportion vs stops proportion
+
+tbl <- table(dat$race)
+tbl <- c(tbl["White"], tbl["Black"],
+         tbl["White Hispanic"]+tbl["Black Hispanic"],
+         tbl["Asian/Pacific Islander"]+tbl["Am. Indian/ Native Alaskan"])
+names(tbl) <- c("White", "Black", "Hispanic", "Other")
+tbl <- tbl/sum(tbl)
+
+barplot((rbind(pop, tbl)*100), beside = TRUE, ylab="Proportion [%]",
+        col=gray.colors(2), ylim=c(0,70), main = "Stops in NYC")
+legend(x = "topright", legend = c("Population", "Stops"),
+       fill=gray.colors(2), bty="n")
+```
+
+On va sélectionner à présent la race
+
+```{r}
+
+#Choose only a subset of variables
+
+d_violence <- dat[, c(
+  #pf = force used
+#  grep("pf_", colnames(dat), value = TRUE),
+  #crime code desc
+  #race
+  #precinct knife contraband other weapon
+  "race" 
+  ,#,"detailcm", 
+  "city" ### city and precinct are related
+  #were other persons arrested
+)]
+
+```
+
+Puis le sexe, l'âge, puis grouper les différentes modalités de la violence.
+
+Si le suspect a été violenté avec les mains, plaqué contre le sol ou contre un mur, on considèrera qu'il a subi de la manual violence
+
+Si le suspect a reçu des coups de bâton, a été menotté ou a reçu du pepper spray dans la figure, on considèrera qu'il a subi de la tool violence
+
+Enfin, si le suspect a été menacé avec une arme à feu, on considèrera qu'il a subit de la gun violence.
+
+```{r}
+d_violence$isfemale <- dat$sex == "female"
+d_violence=d_violence[,!(names(d_violence) %in% c("city"))]
+d_violence$ismale <- dat$sex == "male"
+d_violence$isminor <- dat$age<18
+d_violence$ismajor <- dat$age>17
+d_violence$manual_violence <- dat$pf_hands | dat$pf_wall | dat$pf_grnd
+d_violence$tool_violence <- dat$pf_hcuff | dat$pf_baton | dat$pf_pepsp 
+d_violence$gun_violence <- dat$pf_drwep | dat$pf_ptwep 
+d_violence$other_violence <- dat$pf_other
+```
+
+On peut à présent passer à l'usage de l'algorithme apriori pour les associations. Il sera intéressant d'isoler les différentes "races" dans notre analyse, pour étudier le comportement de la police américaine selon les "races" des personnes qu'elle arrête.
+
+```{r , message=FALSE, warning=FALSE }
+trans_violence <- as(d_violence, "transactions")
+summary(trans_violence)
+itemLabels(trans_violence)
+r_violence <- apriori(d_violence, parameter = list(sup=0.001,conf=0.5,target="rules", maxlen=4, minlen=2))
+w= subset( r_violence, subset = ( (lhs %pin% "race=Black" )  | ( rhs %pin% "race=Black" ) ))  
+w=as(w,"data.frame")
+w=w[order(w$lift, decreasing=T),]
+wruleslife= data.frame(w$rules, w$lift)
+head(wruleslife,25)
+```
+Les noirs sont associés à tous les types de violence fortement. La majorité des noirs de cette catégorie sont des mâles majeurs, mais une autre catégorie souffre exactement des mêmes type de violence et constitue des mâles mineurs.
+
+Même les femmes noires ne sont pas épargnées. Elles sont généralement majeures et souffrent de violences avec des outils.
+
+Quand il s'agit des hispaniques noirs, ils sont majoritairement des mâles et souffrent de violence manuelle lors de l'arrestation. Ils sont tant majeurs que mineurs à être associés à la violence.
+
+
+
+```{r , message=FALSE, warning=FALSE}
+r_violence <- apriori(d_violence, parameter = list(sup=0.001,conf=0.5,target="rules", maxlen=4, minlen=2))
+w= subset( r_violence, subset = ( (lhs %pin% "race=White" )  | ( rhs %pin% "race=White" ) ))  
+w=as(w,"data.frame")
+w=w[order(w$lift, decreasing=T),]
+wruleslife= data.frame(w$rules, w$lift)
+head(wruleslife,25)
+```
+
+
+Les Hispaniques blancs sont associés fortement à de la violence avec des armes blanches et des armes à feu, ainsi qu'à la main. La plupart sont des mâles et ont plus de 18 ans.
+De plus, une catégorie de blancs mâles et majeurs est associée à de la violence manuelle ou avec des armes blanches.
+Une autre catégorie est mineure et est associée à de la violence manuelle.
+Enfin, une dernière catégorie est une catégorie de femmes majeures qui souffrent de violence manuelle.
+```{r , message=FALSE, warning=FALSE}
+r_violence <- apriori(d_violence, parameter = list(sup=0.0001,conf=0.5,target="rules", maxlen=4, minlen=2))
+w= subset( r_violence, subset = ( (lhs %pin% "race=Am" )  | ( rhs %pin% "race=Am" ) ))  
+w=as(w,"data.frame")
+w=w[order(w$lift, decreasing=T),]
+wruleslife= data.frame(w$rules, w$lift)
+head(wruleslife,25)
+```
+Most Native Americans and Alaskans suffer manual violence are males, and while most of them are males, there are minors as well that seem associated with the violence.
+Les arrestations des amérindiens et des natifs de l'Alaska sont fortement associées à de la violence manuelle. La majorité de ceux arrêtés et violentés sont des mâles et des majeurs, mais les mineurs sont également associés à la violence.
+
+
+#Conclusion et perspectives
+
+Cette étude sur la violence montre qu'aucune race n'est à l'abri de la violence. En vérité, toute arrestation est liée d'une manière ou d'une autre à la violence. En revanche, on note la brutalité de la violence à l'égard des noirs quelle que soit la personne, homme ou femme, majeur ou mineur, ou même hispanique. De plus, le fait que les noirs sont largement surreprésentés par rapport à la proportion de leur groupe ethnique dans leur population - et en particulier à l'opposition des blancs - montre à quel point la police de New York entretient des préjugés racistes.
