@@ -1,1 +1,1 @@
-To be updated
+This repository contains the Data Science projects I made over the year 2018. Some codes are messy, others are not intended for deployment or production. Some are academic. I share in the hope it helps someone achieve something great, as they did to me.
