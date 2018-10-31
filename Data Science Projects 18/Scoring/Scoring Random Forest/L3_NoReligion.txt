@@ -1,0 +1,12 @@
+0% NoReligion
+1 - 10% NoReligion
+11 - 23% NoReligion
+24 - 36% NoReligion
+37 - 49% NoReligion
+50 - 62% NoReligion
+63 - 75% NoReligion
+76 - 88% NoReligion
+89 - 99% NoReligion
+100% NoReligion
+
+ 

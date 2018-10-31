@@ -1,0 +1,76 @@
+We will recover the database from a file, AssuranceExpertsInc.txt, containing informations about clients grouped by postal code.
+
+The columns are divided between sociodemographic columns, and columns related to insurance. Besides, the column names are not significant. Thus we have recovered the true column names from the descriptive file and we will assign each name to its respective column.
+
+We have noticed that the modalities of each column range from 0 to 40, with each modality representing a certain real world modality. Our values are not ordinal, thus we will have to correctly identify every modality with its respective real world modality, and we will have to dummify our dataset.
+
+First, we recover the customer subtype, and we will assign the modalities to the respective columns.
+
+Then we recover the customer main type and we do the same thing.
+
+Then we recover the average age and we do the same thing.
+
+Now, we will have to get rid of two columns. STATUS says if the column is a part of the training set or the testing set. CLASS is our target value. We will have to skip both of these before we dummify the rest of the dataset.
+
+Now, we dummify all the remaining values.
+
+Hypothesis and outline
+
+We have little knowledge of insurance and we have little time to spare to understand the topic entirely. We could start setting assumptions but it will be a long process of trial and error we don't want.
+
+The idea would be to study the correlation between every single dummy value and the target value. Then, by plotting the top 10 most positively correlated attributes and the top 10 most negatively correlated attributes, we will be able to make a targeted vizualization, reaching directly the most important values.
+
+First, we start with the correlations
+
+Then we plot the most positively correlated attributes
+
+We can select easily certain values:
+
+Contribution fire policies_4
+Number of car policies_1
+Purchasing power class_7
+Rented house_0
+House owners_9
+Number of fire policies_1
+Number of car policies_2
+
+Now, we plot the most negatively correlated attributes
+
+We can easily select certain values
+
+Number of car policies_0
+Contribution boat policies_0
+Contribution fire policies_0
+Average income_3
+Contribution fire policies_2
+
+Now, we move straight to plotting the select values' confusion matrices
+
+We start with the positive correlations
+
+We can see here that those who spend between 500 and 999 on car policies are more likely to want a caravan.
+
+It can be explained by the fact that those having a car policy both have a car, have an expensive car insurance and thus have the ability and the culture to have both a caravan and a caravan insurance.
+
+We can see here that those who spend moderately on fire policies (between 100 and 199) are less likely to want to have a caravan.
+
+We can see here that those who spend very low amounts on car policies (1 - 49) are more likely to have a caravan.
+
+Having a class 7 purchasing power makes a customer's region have a low chance of wanting a caravan.
+
+We can see here that the regions with a very high proportion of home owners are less likely to want a caravan.
+
+Likewise, regions with a high proportion of home renters are more likely to want a caravan.
+
+Now we will take a look at the negative correlations
+
+Here, we notice that most people who contribute to a car policy have a higher chance of saying yes.
+
+And here, we see that the crushing majority of those who contribute to boat policies have a high chance of saying yes. But it's also true for those who say no, so we can't use that.
+
+But if we take a look at the proportions, we may notice something
+
+Here, the proportion of boat owners is a lot higher than the proportion of non boat owners.
+
+Here, we notice that those who have fire policies have a higher chance of saying yes than those who do not own fire policies
+

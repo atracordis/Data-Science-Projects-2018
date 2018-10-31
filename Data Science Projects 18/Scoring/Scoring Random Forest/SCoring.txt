@@ -1,0 +1,102 @@
+Catholics are more represented in yes than no
+
+Protestants are better represented in no than yes
+
+=> catholics say yes more often
+
+More married people say yes than no
+
+People in other relations say more no than yes
+
+single people are better represented in no than yes
+
+=> family stability makes you say yes
+ 
+people who have no children are better represented in no than yes
+
+households with children say yes more often than not
+
+=> children make you say yes more often than not
+
+education 
+
+people with high education say yes more often than not
+
+people with medium education say yes more often than not
+
+people with low education say no more often than yes
+
+=> the higher the education, the higher the probability of saying yes
+
+social status
+
+people with higher social status say yes more often than not
+
+people who work in middle management say yes more often than not
+(the managers in an organization at a level between senior and junior managers.)
+
+farmers say no more often than yes
+
+skilled labourers say no more often than yes (blue collar workers, low-grade work that requires certain skills)
+
+unskilled labourers say no more often than yes (no education, manual work)
+
+but skilled workers say yes more often than unskilled workers, (higher median)
+
+=> there's a positive correlation between social status and saying yes: the higher the status, the higher the chance of saying yes
+
+Social class 
+
+B1 says yes more often than not (high status)
+
+B2 says yes more often than not, but less than B1 (middle management)
+
+C says no more often than not (C=skilled labor)
+
+D says no more often than not, but more than C (D=unskilled labor)
+
+=> positive correlation between social class: the higher the class, the higher the cash, the higher the probability of yes
+
+
+car ownership
+
+those who own one car have higher chances of saying yes
+
+those who own two cars are evenly matched
+
+those who have no car say no more than yes
+
+=> if you own two cars or don't own a car, you have more chances of saying no than yes. One car is the reverse
+
+income
+
+less than 30000 makes you say no more often than not
+
+a 75000 122000 makes you say yes a little more often than not.
+
+30000 45000 makes you want to say yes a little bit more
+
+45000 75000 likewise
+
+75000 122000 too
+
+more than 123000 it stagnates
+
+more than 123 and you're evenly matched
+
+76,000 is the average family income in canada. More yes than no
+
+purchasing power. More yes than no
+
+=> target: upper middle class
+
+ratio private third party insurance
+
+those who have a higher ratio contribute more, thus those who contribute more to third party insurance say yes more often than not
+
+same for those who have a car insurance
+
+samefor fire insurance
+
+=> those who have a higher contribution to private third party insurance, car insurance and fire insurance have a higher chance of saying yes
+

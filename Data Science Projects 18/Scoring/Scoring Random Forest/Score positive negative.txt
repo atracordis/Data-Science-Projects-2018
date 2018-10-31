@@ -1,0 +1,33 @@
+Age : None
+Catholic : Positive
+Protestant : Negative
+Married : Positive
+Other relation : Negative
+Single : Negative
+No children : Negative
+Children : Positive
+High Education : Positive
+Medium Education : Positive
+Lower Level Education : Negative
+High Status : Positive
+Farmer : Negative
+Middle Management : Positive
+Skilled labourers : Negative
+Unskilled labourers : Negative
+B1 class : Positive
+B2 class : Positive
+C class : Negative
+D class : Negative
+One car : Positive
+Two cars : None
+No car : Negative
+30000 : Negative
+30 45 : Positive
+45 75 : Positive
+75 122 : Positive
+More : None
+Average Income : Positive
+Purchasing power class : Positive
+Ratio third party : Positive
+Ratio car insurance : positive
+Ratio Fire : Positive
